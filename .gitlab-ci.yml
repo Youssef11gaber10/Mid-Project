@@ -51,16 +51,16 @@ dockarize-react:
   variables:
     PLACEHOLDER_DIRECTORY: frontend
     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
-needs:
-  - slack_pipeline_start
+  needs:
+    - slack_pipeline_start
 
 dockarize-flask:
   extends: dockerize_template
   variables:
     PLACEHOLDER_DIRECTORY: backend
     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
-needs:
-  - slack_pipeline_start
+  needs:
+    - slack_pipeline_start
 
 
 # deploy_template:
