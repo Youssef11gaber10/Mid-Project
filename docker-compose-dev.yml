@@ -15,8 +15,10 @@ services:
     build:
       context: ./backend
     container_name: backend
-    ports: # no need to expose the port of the backend he in nginx.conf when /api will reverse him to backend:5000 and name of service backend will replaced with ip of the container
-      - 5000:5000
+    expose:
+      - 5000
+    # ports: # no need to expose the port of the backend he in nginx.conf when /api will reverse him to backend:5000 and name of service backend will replaced with ip of the container
+    #   - 5000:5000
     env_file:
         - .env
 
