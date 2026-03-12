@@ -1,22 +1,20 @@
 version: '3.8'
 services: 
   frontend:
-    image: youssef11gaber10/react-service
+    image: youssef11gaber10/react-service:latest
     container_name: nginx-container
     ports:
-      - 4000:80
+      - 3000:80
     networks:
       - front_backend
     depends_on:
       - backend
 
   backend:
-    image: youssef11gaber10/flask-service
+    image: youssef11gaber10/flask-service:latest
     container_name: backend
     expose:
       - 5000
-    # ports: # no need to expose the port of the backend he in nginx.conf when /api will reverse him to backend:5000 and name of service backend will replaced with ip of the container
-    #   - 5000:5000
     env_file:
         - .env
 
