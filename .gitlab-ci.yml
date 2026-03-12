@@ -39,7 +39,7 @@ slack_pipeline_start:
   services:
     - docker:dind
   before_script:
-    -docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
   script:
     - cd $PLACEHOLDER_DIRECTORY
     - docker build -t  app:v1 .
