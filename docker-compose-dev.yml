@@ -1,0 +1,50 @@
+version: '3.8'
+services: 
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: nginx-container
+    ports:
+      - 4000:80
+    networks:
+      - front_backend
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports: # no need to expose the port of the backend he in nginx.conf when /api will reverse him to backend:5000 and name of service backend will replaced with ip of the container
+      - 5000:5000
+    env_file:
+        - .env
+
+    networks:
+      - front_backend
+      - backend_postgres
+    depends_on:
+      - postgres
+
+
+
+  postgres:
+    image: postgres:16
+    container_name:  postgres-container
+    expose:
+      - 5432
+    env_file:
+      - .env
+    networks:
+      - backend_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+
+networks:
+  front_backend:
+  backend_postgres:
+
+volumes:
+  postgres_data:
+    
