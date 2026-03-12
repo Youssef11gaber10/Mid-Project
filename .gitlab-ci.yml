@@ -47,7 +47,7 @@ slack_pipeline_start:
     - docker push $PLACEHOLDER_LATEST
 
 dockarize-react:
-  extends: dockerize_template
+  extends: .dockerize_template
   variables:
     PLACEHOLDER_DIRECTORY: frontend
     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
@@ -55,7 +55,7 @@ dockarize-react:
     - slack_pipeline_start
 
 dockarize-flask:
-  extends: dockerize_template
+  extends: .dockerize_template
   variables:
     PLACEHOLDER_DIRECTORY: backend
     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
