@@ -10,11 +10,14 @@ services:
       - front_backend
     depends_on:
       - backend
+      - backend2
+      - backend3
 
   backend:
     build:
       context: ./backend
-    container_name: backend
+    container_name: backend-server1
+    hostname: backend1-server
     expose:
       - 5000
     env_file:
@@ -25,6 +28,40 @@ services:
       - backend_postgres
     depends_on:
       - postgres
+
+  backend2:
+    build:
+      context: ./backend
+    container_name: backend-server2
+    hostname: backend2-server
+    expose:
+      - 5000
+    env_file:
+        - .env
+
+    networks:
+      - front_backend
+      - backend_postgres
+    depends_on:
+      - postgres
+      - backend
+  backend3:
+    build:
+      context: ./backend
+    container_name: backend-server3
+    hostname: backend3-server
+    expose:
+      - 5000
+    env_file:
+        - .env
+
+    networks:
+      - front_backend
+      - backend_postgres
+    depends_on:
+      - postgres
+      - backend
+      - backend2
 
 
 

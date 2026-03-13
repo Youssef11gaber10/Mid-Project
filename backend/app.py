@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from flask_swagger_ui import get_swaggerui_blueprint
 import os
 from dotenv import load_dotenv
+import socket
+from sqlalchemy import text, inspect
 
 # Load environment variables
 load_dotenv()
@@ -62,6 +64,23 @@ class Task(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
+    
+@app.route('/api/loadbalancer')
+def loadbalancer():
+    try:
+        # db.session.execute('SELECT 1')
+        db.session.execute(text("SELECT 1"))
+        return jsonify({
+            'status': 'healthy',
+            'database': 'connected',
+            'container': socket.gethostname(),   # 👈 this shows container name
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'container': socket.gethostname()
+        }), 500
 
 # Error handlers
 @app.errorhandler(404)
@@ -147,7 +166,15 @@ def health_check():
             'error': str(e)
         }), 500
 
+# if __name__ == '__main__':
+#     with app.app_context():
+#         db.create_all()
+#     app.run(host='0.0.0.0', port=5000, debug=True)
+
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        inspector = inspect(db.engine)
+        if not inspector.has_table("task"):
+            db.create_all()
+
     app.run(host='0.0.0.0', port=5000, debug=True)
