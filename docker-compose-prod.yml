@@ -7,10 +7,17 @@ services:
       - 3000:80
     networks:
       - front_backend
+    # depends_on:
+    #   - backend
+    #   - backend2
+    #   - backend3
     depends_on:
-      - backend
-      - backend2
-      - backend3
+      backend:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+      backend3:
+        condition: service_healthy
 
   backend:
     image: youssef11gaber10/flask-service:latest
@@ -27,6 +34,12 @@ services:
     # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:5000/api/tasks').getcode()==200 else sys.exit(1)"]
+      interval: 5s # check every 5 seconds
+      timeout: 3s # wait for 3 seconds 
+      retries: 5 # try 5 times after them with no response he will consider the status unhealthy
+
       
   backend2: # this is for test load balancer of nginx
     image: youssef11gaber10/flask-service:latest
@@ -41,8 +54,17 @@ services:
       - backend_postgres
     # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
     depends_on:
-      - postgres
-      - backend
+      backend:
+        condition: service_healthy
+    # depends_on:
+    #   - postgres
+    #   - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:5000/api/tasks').getcode()==200 else sys.exit(1)"]
+      interval: 5s # check every 5 seconds
+      timeout: 3s # wait for 3 seconds 
+      retries: 5 # try 5 times after them with no response he will consider the status unhealthy
+
   
   backend3: # this is for test load balancer of nginx
     image: youssef11gaber10/flask-service:latest
@@ -56,10 +78,21 @@ services:
       - front_backend
       - backend_postgres
     # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
+    # depends_on:
+    #   - postgres
+    #   - backend
+    #   - backend2
     depends_on:
-      - postgres
-      - backend
-      - backend2
+      backend:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:5000/api/tasks').getcode()==200 else sys.exit(1)"]
+      interval: 5s # check every 5 seconds
+      timeout: 3s # wait for 3 seconds 
+      retries: 5 # try 5 times after them with no response he will consider the status unhealthy
+
   
 
 
@@ -75,7 +108,8 @@ services:
       - backend_postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+
+    
 
 networks:
   front_backend:
