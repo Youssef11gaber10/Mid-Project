@@ -82,6 +82,7 @@
     #     project_src: "{{ app_dir }}"
     #     state: started # equivelent to up -d , it can be present to restart the container if fail
     #     restart: yes
+    
     - name: stop docker compose if already running
       community.docker.docker_compose:
         project_src: "{{ app_dir }}"
@@ -94,7 +95,11 @@
       community.docker.docker_compose:
         project_src: "{{ app_dir }}"
         state: present
-        restart: yes   # optional
+        restarted: yes
+
+
+
+
 
 
   
