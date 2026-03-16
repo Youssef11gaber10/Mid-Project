@@ -69,19 +69,6 @@
         password: "{{ lookup('env','DOCKERHUB_PASSWORD') }}"
         state: present
 
-    # - name: stop docker compose if already running
-    #   community.docker.docker_compose:
-    #     project_src: "{{ app_dir }}"
-    #     state: absent       # equivalent to docker-compose down
-    #     remove_orphans: yes
-    #     remove_volumes: yes
-    #   ignore_errors: yes    # لو أول مرة يبقى ignore error
-
-    # - name: start docker compose
-    #   community.docker.docker_compose:
-    #     project_src: "{{ app_dir }}"
-    #     state: started # equivelent to up -d , it can be present to restart the container if fail
-    #     restart: yes
     
     - name: stop docker compose if already running
       community.docker.docker_compose:
@@ -95,7 +82,6 @@
       community.docker.docker_compose:
         project_src: "{{ app_dir }}"
         state: present
-        # restarted: yes
 
 
 
