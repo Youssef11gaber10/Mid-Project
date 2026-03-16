@@ -17,14 +17,20 @@ variables:
 
 
 
-slack_pipeline_start:
-  stage: notify
-  image: curlimages/curl:latest
-  script:
-    - >
-      curl -X POST -H "Content-type: application/json" --data "{
-        \"text\": \"👋 Hello team! Pipeline *#${CI_PIPELINE_ID}* just started on branch *${CI_COMMIT_REF_NAME}*! 🛠️\n\n🥁 *Drum rolls...* Get ready for action! 💪\n\n🎉 Let's hope this one doesn't break prod 😅\n\n🔗 <${CI_PIPELINE_URL}|Click here to watch the show!>\"
-      }" $SLACK_WEBHOOK_URL
+# ---
+
+# slack_pipeline_start:
+#   stage: notify
+#   image: curlimages/curl:latest
+#   script:
+#     - >
+#       curl -X POST -H "Content-type: application/json" --data "{
+#         \"text\": \"👋 Hello team! Pipeline *#${CI_PIPELINE_ID}* just started on branch *${CI_COMMIT_REF_NAME}*! 🛠️\n\n🥁 *Drum rolls...* Get ready for action! 💪\n\n🎉 Let's hope this one doesn't break prod 😅\n\n🔗 <${CI_PIPELINE_URL}|Click here to watch the show!>\"
+#       }" $SLACK_WEBHOOK_URL
+
+
+# -----
+
 
 # cache:
 #   key: ${CI_COMMIT_REF_SLUG}
@@ -33,34 +39,44 @@ slack_pipeline_start:
 #     - ./backend/youssef/venv
 # needed cache if you will do lint ,test to preserve the dependencies not install each time 
 
-.dockerize_template:
-  stage: build-docker-images
-  image: docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-  script:
-    - cd $PLACEHOLDER_DIRECTORY
-    - docker build -t  app:v1 .
-    - docker tag app:v1 $PLACEHOLDER_LATEST
-    - docker push $PLACEHOLDER_LATEST
 
-dockarize-react:
-  extends: .dockerize_template
-  variables:
-    PLACEHOLDER_DIRECTORY: frontend
-    PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
-  needs:
-    - slack_pipeline_start
 
-dockarize-flask:
-  extends: .dockerize_template
-  variables:
-    PLACEHOLDER_DIRECTORY: backend
-    PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
-  needs:
-    - slack_pipeline_start
+
+# -----
+
+# .dockerize_template:
+#   stage: build-docker-images
+#   image: docker:latest
+#   services:
+#     - docker:dind
+#   before_script:
+#     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+#   script:
+#     - cd $PLACEHOLDER_DIRECTORY
+#     - docker build -t  app:v1 .
+#     - docker tag app:v1 $PLACEHOLDER_LATEST
+#     - docker push $PLACEHOLDER_LATEST
+
+# dockarize-react:
+#   extends: .dockerize_template
+#   variables:
+#     PLACEHOLDER_DIRECTORY: frontend
+#     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
+#   needs:
+#     - slack_pipeline_start
+
+# dockarize-flask:
+#   extends: .dockerize_template
+#   variables:
+#     PLACEHOLDER_DIRECTORY: backend
+#     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
+#   needs:
+#     - slack_pipeline_start
+
+# ----
+
+
+
 
 
 # deploy_template:
@@ -116,7 +132,7 @@ deploy_template:
     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker run -d --name $CI_JOB_NAME -p $PORT:$PORT $DOCKER_IMAGE_LATEST"
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/private-key-file
   - chmod 600 ~/private-key-file
-    - ansible-playbook \
+  - ansible-playbook \
       -i $EC2_HOST, \
       --private-key=~/private-key-file \
       playbook.yml
