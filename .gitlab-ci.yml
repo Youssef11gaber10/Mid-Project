@@ -136,7 +136,7 @@ deploy_template:
       -i $EC2_HOST, \
       --private-key=~/private-key-file \
       playbook.yml
-  needs:
-    - dockarize-react
-    - dockarize-flask
+  # needs:
+  #   - dockarize-react
+  #   - dockarize-flask
 
