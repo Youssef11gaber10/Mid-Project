@@ -11,7 +11,7 @@ variables:
   FRONT_SERVICE_TAG_LATEST: $DOCKERHUB_USERNAME/react-service:latest
   BACK_SERVICE_TAG_LATEST: $DOCKERHUB_USERNAME/flask-service:latest
   PLACEHOLDER_LATEST: placeholder
-
+  REACT_APP_API_URL_ARG: "" # NOT AFFECT THE BUILD OF FLASK
 
 
 
@@ -50,7 +50,7 @@ slack_pipeline_start:
     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
   script:
     - cd $PLACEHOLDER_DIRECTORY
-    - docker build -t  app:v1 .
+    - docker build -t ${REACT_APP_API_URL_ARG}  app:v1 .
     - docker tag app:v1 $PLACEHOLDER_LATEST
     - docker push $PLACEHOLDER_LATEST
 
@@ -59,7 +59,7 @@ dockarize-react:
   variables:
     PLACEHOLDER_DIRECTORY: frontend
     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
-    REACT_APP_API_URL: "http://$EC2_HOST/api"  # this replace http//localhost:3000/api in front 
+    REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=http://$EC2_HOST/api   # this replace http//localhost:3000/api in front 
   needs:
     - slack_pipeline_start
 
