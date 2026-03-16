@@ -76,7 +76,7 @@ dockarize-flask:
 
 
 
-deploy_template:
+deploy_to_ec2:
   stage: deploy
   image: python:3.12 
   before_script:
