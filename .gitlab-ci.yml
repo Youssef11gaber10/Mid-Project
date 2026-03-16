@@ -50,7 +50,7 @@ slack_pipeline_start:
     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
   script:
     - cd $PLACEHOLDER_DIRECTORY
-    - docker build -t ${REACT_APP_API_URL_ARG}  app:v1 .
+    - docker build ${REACT_APP_API_URL_ARG} -t  app:v1 .
     - docker tag app:v1 $PLACEHOLDER_LATEST
     - docker push $PLACEHOLDER_LATEST
 
