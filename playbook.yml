@@ -4,6 +4,8 @@
   vars:
     compose_file: docker-compose-prod.yml
     app_dir: /home/ubuntu/app # make dir to collect our files
+  vars_files:
+    - vault.yml
     
   tasks:
     - name: ensure app dir is exist 
@@ -53,11 +55,11 @@
       copy:
         dest: "{{ app_dir }}/.env"
         content: |
-          POSTGRES_HOST={{ lookup('env','POSTGRES_HOST') }}
-          POSTGRES_PORT={{ lookup('env','POSTGRES_PORT') }}
-          POSTGRES_USER={{ lookup('env','POSTGRES_USER') }}
-          POSTGRES_PASSWORD={{ lookup('env','POSTGRES_PASSWORD') }}
-          POSTGRES_DB={{ lookup('env','POSTGRES_DB') }}
+          POSTGRES_HOST={{ POSTGRES_HOST }}
+          POSTGRES_PORT={{ POSTGRES_PORT }}
+          POSTGRES_USER={{ POSTGRES_USER }}
+          POSTGRES_PASSWORD={{ POSTGRES_PASSWORD }}
+          POSTGRES_DB={{ POSTGRES_DB }}
         owner: ubuntu
         group: ubuntu
         mode: 0644
