@@ -15,6 +15,9 @@ COPY --from=builder /app/build /usr/share/nginx/html
 # the default.conf will be included inside nginx.conf
 COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf  
 
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 EXPOSE 80
 
 CMD [ "nginx", "-g", "daemon off;" ]
