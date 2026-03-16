@@ -53,11 +53,11 @@
       copy:
         dest: "{{ app_dir }}/.env"
         content: |
-          POSTGRES_HOST=postgres 
-          POSTGRES_PORT=5432
-          POSTGRES_USER=youssef
-          POSTGRES_PASSWORD=123
-          POSTGRES_DB=microservices_db
+          POSTGRES_HOST={{ lookup('env','POSTGRES_HOST') }}
+          POSTGRES_PORT={{ lookup('env','POSTGRES_PORT') }}
+          POSTGRES_USER={{ lookup('env','POSTGRES_USER') }}
+          POSTGRES_PASSWORD={{ lookup('env','POSTGRES_PASSWORD') }}
+          POSTGRES_DB={{ lookup('env','POSTGRES_DB') }}
         owner: ubuntu
         group: ubuntu
         mode: 0644
