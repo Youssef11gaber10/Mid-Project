@@ -82,7 +82,7 @@
       community.docker.docker_compose:
         project_src: "{{ app_dir }}"
         state: present
-        timeout: 300
+
 
 
 
