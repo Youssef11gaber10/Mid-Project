@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package.json .
 RUN npm install
 COPY . .
+
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL 
+# should put env variable before build cause the code will take them when build 
 RUN npm run build
 
 
@@ -15,8 +19,6 @@ COPY --from=builder /app/build /usr/share/nginx/html
 # the default.conf will be included inside nginx.conf
 COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf  
 
-ARG REACT_APP_API_URL
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 EXPOSE 80
 
