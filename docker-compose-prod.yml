@@ -4,7 +4,7 @@ services:
     image: youssef11gaber10/react-service:latest
     container_name: nginx-container
     ports:
-      - 3000:80
+      - 80:80
     networks:
       - front_backend
     # depends_on:
