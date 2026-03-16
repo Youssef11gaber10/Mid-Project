@@ -100,7 +100,7 @@ deploy_to_ec2:
     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker run -d --name $CI_JOB_NAME -p $PORT:$PORT $DOCKER_IMAGE_LATEST"
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/private-key-file
   - chmod 600 ~/private-key-file
-  - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml
+  - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml --vault-password-file=<(echo $VAULT_PASSWORD)
 
   needs:
     - dockarize-react
