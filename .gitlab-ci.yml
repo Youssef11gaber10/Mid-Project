@@ -87,3 +87,38 @@ dockarize-flask:
 #   needs:
 #     - dockarize-react
 
+
+
+deploy_template:
+  stage: deploy
+  image: python:3.12 
+  before_script:
+  # install ssh client
+    - apt-get update && apt-get install -y openssh-client
+  # install ansible
+    - pip install ansible==8.6.0
+  # setup ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # autmate provide the .pem instead of provide throw command -i .pem
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts # instead of asking me first time to put the ip in known_hosts i put the ip $ec2_host
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo apt-get update -y && sudo apt-get install docker.io -y" # done inside ansible 
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo systemctl start docker" # done inside ansible
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo usermod -aG docker $EC2_USER" # ansible done implicitly
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "newgrp docker" # ansible done implicitly
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD" # done with ansible
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker pull $DOCKER_IMAGE_LATEST" # done with ansible
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker stop $CI_JOB_NAME || true"
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker rm $CI_JOB_NAME || true"
+    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker run -d --name $CI_JOB_NAME -p $PORT:$PORT $DOCKER_IMAGE_LATEST"
+    - ansible-playbook \
+      -i $EC2_HOST, \
+      --private-key=$SSH_PRIVATE_KEY \
+      playbook.yml
+  needs:
+    - dockarize-react
+    - dockarize-flask
+

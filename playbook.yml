@@ -1,0 +1,87 @@
+- name: set up ec2 
+  hosts: all # cause the host will come from cli not from inventory
+  become: yes 
+  vars:
+    compose_file: docker-compose-prod.yml
+    app_dir: /home/ubuntu/app # make dir to collect our files
+    
+  tasks:
+    - name: ensure app dir is exist 
+      file: 
+        path: "{{ app_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: 0755
+
+    # update cache and install 
+    - name: update cache
+      apt:
+        update_cache: yes
+      
+    - name: install docker
+      apt:
+        name: docker.io
+        state: present # state is present or absent , latest to install or remove, get the latest version
+        # update_cache: yes # to not found one in your cache go search for the latest version
+
+    - name: install docker-compose
+      apt:
+        name: docker-compose
+        state: present
+        # update_cache: yes
+    
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # now we gonna copy docker compose to remote host
+    # do .env file with some env variable
+    # start docker compose
+
+    - name: copy docker compose file
+      copy:
+        src: "{{ compose_file }}"
+        dest: "{{ app_dir }}/docker-compose.yml"
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+
+    - name: copy .env file
+      copy:
+        dest: "{{ app_dir }}/.env"
+        content: |
+          POSTGRES_HOST=postgres # name of service in docker compose will be replaced with ip of the container
+          POSTGRES_PORT=5432
+          POSTGRES_USER=youssef
+          POSTGRES_PASSWORD=123
+          POSTGRES_DB=microservices_db
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+
+    - name: login to docker registry 
+      community.docker.docker_login:
+        registry_url: "https://index.docker.io/v1/"
+        username: "{{ lookup('env','DOCKERHUB_USERNAME') }}" #takes the value from env variable in ci/cd varibales because it run on runner of gitlab
+        password: "{{ lookup('env','DOCKERHUB_PASSWORD') }}"
+        state: present
+
+    - name: stop docker compose if already running
+      community.docker.docker_compose:
+        project_src: "{{ app_dir }}"
+        state: absent       # equivalent to docker-compose down
+        remove_orphans: yes
+        remove_volumes: yes
+      ignore_errors: yes    # لو أول مرة يبقى ignore error
+
+    - name: start docker compose
+      community.docker.docker_compose:
+        project_src: "{{ app_dir }}"
+        state: started # equivelent to up -d , it can be present to restart the container if fail
+        restart: yes
+
+
+  
