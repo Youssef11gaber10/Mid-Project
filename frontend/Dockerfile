@@ -8,6 +8,8 @@ COPY . .
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=$REACT_APP_API_URL 
 # should put env variable before build cause the code will take them when build 
+RUN echo "REACT_APP_API_URL=$REACT_APP_API_URL"
+
 RUN npm run build
 
 
