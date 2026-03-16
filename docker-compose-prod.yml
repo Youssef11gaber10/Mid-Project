@@ -24,7 +24,7 @@ services:
     networks:
       - front_backend
       - backend_postgres
-    restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
+    # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
     depends_on:
       - postgres
       
@@ -39,7 +39,7 @@ services:
     networks:
       - front_backend
       - backend_postgres
-    restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
+    # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
     depends_on:
       - postgres
       - backend
@@ -55,7 +55,7 @@ services:
     networks:
       - front_backend
       - backend_postgres
-    restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
+    # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
     depends_on:
       - postgres
       - backend
