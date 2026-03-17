@@ -78,8 +78,8 @@
         path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
         privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
         provider: selfsigned
-        selfsigned_notBefore: "{{ ansible_date_time.iso8601 }}"
-        selfsigned_notAfter: "{{ (ansible_date_time.iso8601 | to_datetime) + timedelta(days=365) }}"
+        selfsigned_notBefore: "{{ lookup('pipe','date +\"%Y-%m-%d %H:%M:%S\"') }}"
+        selfsigned_notAfter: "{{ lookup('pipe','date -d \"+365 days\" +\"%Y-%m-%d %H:%M:%S\"') }}"
         selfsigned_create_subject_key_identifier: yes
         owner: ubuntu
         group: ubuntu
