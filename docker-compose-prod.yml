@@ -68,8 +68,10 @@ services:
       timeout: 3s # wait for 3 seconds 
       retries: 5 # try 5 times after them with no response he will consider the status unhealthy
 
+
+# we comment this third server of backend because the recourses of EC2 machine can't afford it and also comment it from pool of ip in load balancer in nginx.conf
   
-  # backend3: # this is for test load balancer of nginx
+  # backend3: # this is for test load balancer of nginx 
   #   image: youssef11gaber10/flask-service:latest
   #   container_name: backend-server3
   #   hostname: backend3-server
