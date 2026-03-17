@@ -63,16 +63,16 @@ dockarize-react:
     PLACEHOLDER_DIRECTORY: frontend
     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
     REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=http://$EC2_HOST/api   # this replace http//localhost:3000/api in front 
-  needs:
-    - slack_pipeline_start
+  # needs:
+  #   - slack_pipeline_start
 
-dockarize-flask:
-  extends: .dockerize_template
-  variables:
-    PLACEHOLDER_DIRECTORY: backend
-    PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
-  needs:
-    - slack_pipeline_start
+# dockarize-flask:
+#   extends: .dockerize_template
+#   variables:
+#     PLACEHOLDER_DIRECTORY: backend
+#     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
+#   needs:
+#     - slack_pipeline_start
 
 # ---
 
@@ -108,5 +108,5 @@ deploy_to_ec2:
 
   needs:
     - dockarize-react
-    - dockarize-flask
+    # - dockarize-flask
 
