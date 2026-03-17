@@ -51,7 +51,7 @@
         group: ubuntu
         mode: 0644
 
-    - name: copy .env file
+    - name: make .env file from vault
       copy:
         dest: "{{ app_dir }}/.env"
         content: |
@@ -78,7 +78,7 @@
         # common_name: localhost # to add this in /etc/hosts file to make the host name localhost
         owner: ubuntu
         group: ubuntu
-        provider: self_signed
+        provider: selfsigned
         state: present
         days: 365
         size: 2048
