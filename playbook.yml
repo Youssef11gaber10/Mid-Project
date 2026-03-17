@@ -64,6 +64,26 @@
         group: ubuntu
         mode: 0644
 
+    - name: make dir for ssl
+      file: 
+        path: "{{ app_dir }}/nginx-self-sign"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: 0755
+    - name: create ssl cert and key
+      openssl_certificate:
+        path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
+        private_key_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
+        # common_name: localhost # to add this in /etc/hosts file to make the host name localhost
+        owner: ubuntu
+        group: ubuntu
+        provider: self_signed
+        state: present
+        days: 365
+        size: 2048
+    
+
     - name: login to docker registry 
       community.docker.docker_login:
         registry_url: "https://index.docker.io/v1/"

@@ -5,8 +5,12 @@ services:
     container_name: nginx-container
     ports:
       - 80:80
+      - 443:443
     networks:
       - front_backend
+    volumes: # i will install this cert with ansible in iside ec2-instance you will find in dir in app/nginx-self-sign
+      - ./nginx-self-sign/nginx.selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      - ./nginx-self-sign/nginx.selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
     # depends_on:
     #   - backend
     #   - backend2
