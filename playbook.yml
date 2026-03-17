@@ -72,18 +72,15 @@
         group: ubuntu
         mode: 0755
 
-    - name: create self-signed certificate
+    - name: generate self-signed SSL certificate
       openssl_certificate:
         path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
         privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
         provider: selfsigned
-        selfsigned_notBefore: "{{ lookup('pipe','date +\"%Y-%m-%d %H:%M:%S\"') }}"
-        selfsigned_notAfter: "{{ lookup('pipe','date -d \"+365 days\" +\"%Y-%m-%d %H:%M:%S\"') }}"
-        selfsigned_create_subject_key_identifier: create_if_not_provided 
+        selfsigned_create_subject_key_identifier: create_if_not_provided
+        state: present
         owner: ubuntu
         group: ubuntu
-        state: present
-    
 
     - name: login to docker registry 
       community.docker.docker_login:
