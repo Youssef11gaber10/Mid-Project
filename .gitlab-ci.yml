@@ -66,13 +66,13 @@ dockarize-react:
   needs:
     - slack_pipeline_start
 
-# dockarize-flask:
-#   extends: .dockerize_template
-#   variables:
-#     PLACEHOLDER_DIRECTORY: backend
-#     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
-#   needs:
-#     - slack_pipeline_start
+dockarize-flask:
+  extends: .dockerize_template
+  variables:
+    PLACEHOLDER_DIRECTORY: backend
+    PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
+  needs:
+    - slack_pipeline_start
 
 # ---
 
@@ -108,5 +108,5 @@ deploy_to_ec2:
 
   needs:
     - dockarize-react
-  #   - dockarize-flask
+    - dockarize-flask
 
