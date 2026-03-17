@@ -71,17 +71,19 @@
         owner: ubuntu
         group: ubuntu
         mode: 0755
-    - name: create ssl cert and key
+
+
+    - name: create self-signed certificate
       openssl_certificate:
         path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
-        private_key_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
-        # common_name: localhost # to add this in /etc/hosts file to make the host name localhost
+        privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
+        provider: selfsigned
+        selfsigned_notBefore: "{{ ansible_date_time.iso8601 }}"
+        selfsigned_notAfter: "{{ (ansible_date_time.iso8601 | to_datetime) + timedelta(days=365) }}"
+        selfsigned_create_subject_key_identifier: yes
         owner: ubuntu
         group: ubuntu
-        provider: selfsigned
         state: present
-        days: 365
-        size: 2048
     
 
     - name: login to docker registry 
