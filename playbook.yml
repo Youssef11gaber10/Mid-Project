@@ -72,7 +72,6 @@
         group: ubuntu
         mode: 0755
 
-
     - name: create self-signed certificate
       openssl_certificate:
         path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
@@ -80,7 +79,7 @@
         provider: selfsigned
         selfsigned_notBefore: "{{ lookup('pipe','date +\"%Y-%m-%d %H:%M:%S\"') }}"
         selfsigned_notAfter: "{{ lookup('pipe','date -d \"+365 days\" +\"%Y-%m-%d %H:%M:%S\"') }}"
-        selfsigned_create_subject_key_identifier: yes
+        selfsigned_create_subject_key_identifier: create_if_not_provided 
         owner: ubuntu
         group: ubuntu
         state: present
