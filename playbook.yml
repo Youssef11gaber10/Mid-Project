@@ -63,24 +63,41 @@
         owner: ubuntu
         group: ubuntu
         mode: 0644
-
-    - name: make dir for ssl
-      file: 
+    - name: Make dir for SSL
+      file:
         path: "{{ app_dir }}/nginx-self-sign"
         state: directory
         owner: ubuntu
         group: ubuntu
-        mode: 0755
+        mode: "0755"
 
-    - name: generate self-signed SSL certificate
-      openssl_certificate:
-        path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
-        privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
-        provider: selfsigned
-        selfsigned_create_subject_key_identifier: create_if_not_provided
-        state: present
+    - name: Generate private key
+      community.crypto.openssl_privatekey:
+        path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
+        size: 2048
         owner: ubuntu
         group: ubuntu
+        mode: "0600"
+
+    - name: Generate CSR
+      community.crypto.openssl_csr:
+        path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.csr"
+        privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
+        common_name: localhost
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Create self-signed SSL certificate
+      community.crypto.x509_certificate:
+        path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.crt"
+        privatekey_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.key"
+        csr_path: "{{ app_dir }}/nginx-self-sign/nginx.selfsigned.csr"
+        provider: selfsigned
+        selfsigned_not_after: "+365d"
+        owner: ubuntu
+        group: ubuntu
+        mode: "0644"
+        
 
     - name: login to docker registry 
       community.docker.docker_login:
