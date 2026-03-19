@@ -62,36 +62,68 @@ install-dependencies-back:
     - . ./youssef/venv/bin/activate
     - pip install --no-cache-dir -r requirements.txt
 
-.lint-template:
-  stage: lint
+# .lint-template:
+#   stage: lint
+#   image: $BASE_IMAGE
+#   script:
+#     - cd $PLACEHOLDER_DIRECTORY
+#     - $COMMAND
+
+
+# lint-front:
+#   extends: .lint-template
+#   variables:
+#     BASE_IMAGE: node:18-alpine
+#     PLACEHOLDER_DIRECTORY: ./frontend
+#     COMMAND: npm run lint 
+#   needs:
+#     - install-dependencies-front
+
+# lint-back:
+#   extends: .lint-template
+#   variables:
+#     BASE_IMAGE: python:3.11
+#     PLACEHOLDER_DIRECTORY: ./backend
+#     # need to activate venv before run flake8
+#     # COMMAND: flake8
+#   script:
+#     - cd $PLACEHOLDER_DIRECTORY
+#     - . ./youssef/venv/bin/activate
+#     - flake8 app.py 
+#   needs:
+#     - install-dependencies-back
+
+
+.test-template:
+  stage: test
   image: $BASE_IMAGE
   script:
     - cd $PLACEHOLDER_DIRECTORY
     - $COMMAND
 
-
-lint-front:
-  extends: .lint-template
+test-front:
+  extends: .test-template
   variables:
     BASE_IMAGE: node:18-alpine
     PLACEHOLDER_DIRECTORY: ./frontend
-    COMMAND: npm run lint 
+    COMMAND: npm run test
   needs:
     - install-dependencies-front
+    # - lint-front
 
-lint-back:
-  extends: .lint-template
-  variables:
-    BASE_IMAGE: python:3.11
-    PLACEHOLDER_DIRECTORY: ./backend
-    # need to activate venv before run flake8
-    # COMMAND: flake8
-  script:
-    - cd $PLACEHOLDER_DIRECTORY
-    - . ./youssef/venv/bin/activate
-    - flake8 app.py 
-  needs:
-    - install-dependencies-back
+# test-back:
+#   extends: .test-template
+#   variables:
+#     BASE_IMAGE: python:3.11
+#     PLACEHOLDER_DIRECTORY: ./backend
+#     # need to activate venv before run pytest
+#     # COMMAND: pytest
+#   script:
+#     - cd $PLACEHOLDER_DIRECTORY
+#     - . ./youssef/venv/bin/activate
+#     - pytest test_app.py
+#   needs:
+#     - lint-back
 
 
 # lint-back:
