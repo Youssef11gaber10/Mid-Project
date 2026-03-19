@@ -215,9 +215,7 @@ Your pipeline depends on these environment variables being configured in GitLab 
 
 You can also use the video below as proof of the rotation behavior:
 
-<video controls width="720" src="result-images/loadbalancer.mp4">
-  Your browser does not support the video tag.
-</video>
+
 
 ![Load balancer preview](result-images/loadbalancer.gif)
 
