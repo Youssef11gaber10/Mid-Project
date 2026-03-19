@@ -1,8 +1,8 @@
 stages : 
   - notify 
   - install-dependencies # if you do lint , test files on local use it here 
-  # - lint
-  # - test
+  - lint
+  - test
   - build-docker-images
   - deploy
 
@@ -12,6 +12,9 @@ variables:
   BACK_SERVICE_TAG_LATEST: $DOCKERHUB_USERNAME/flask-service:latest
   PLACEHOLDER_LATEST: placeholder
   REACT_APP_API_URL_ARG: "" # NOT AFFECT THE BUILD OF FLASK
+  BASE_IMAGE: "" # can be node:18-alpine or python:3.11
+  COMMAND: "" # can be npm install or python -m venv ./youssef/venv ,...etc
+  ARTIFACT_PATH: "" # can be ./frontend/node_modules or ./backend/youssef/venv
 
 
 
@@ -21,33 +24,41 @@ cache:
   paths:
     - ./frontend/node_modules
     - ./backend/youssef/venv
+
+
+.install-dependencies-template:
+  stage: install-dependencies
+  image: $BASE_IMAGE
+  script:
+    - cd $PLACEHOLDER_DIRECTORY
+    - $COMMAND
+  artifacts:
+    paths:
+      - $ARTIFACT_PATH
+  # needs:
+  #   - slack_pipeline_start
     
 # i decide to don't make template cause they are different in install in each one the python will do command for create venv and install requirements not strait forward
 install-dependencies-front:
-  stage: install-dependencies
-  image: node:18-alpine
-  script:
-    - cd ./frontend
-    - npm install
-  artifacts:
-    paths:
-      - ./frontend/node_modules 
-  # needs:
-  #   - slack_pipeline_start
+  extends: .install-dependencies-template
+  variables:
+    BASE_IMAGE: node:18-alpine
+    PLACEHOLDER_DIRECTORY: ./frontend
+    COMMAND: npm install
+    ARTIFACT_PATH: ./frontend/node_modules
+
 
 install-dependencies-back:
-  stage: install-dependencies
-  image: python:3.11
-  script:
-    - cd ./backend 
-    - python -m venv ./youssef/venv # this will be inside back directories next to project 
-    - . ./youssef/venv/bin/activate 
-    - pip install --no-cache-dir -r requirements.txt
-  artifacts:
-    paths:
-      - ./backend/youssef/venv
-  # needs:
-  #   - slack_pipeline_start
+  extends: .install-dependencies-template
+  variables:
+    BASE_IMAGE: python:3.11
+    PLACEHOLDER_DIRECTORY: ./backend
+    COMMAND: python -m venv ./youssef/venv && . ./youssef/venv/bin/activate && pip install --no-cache-dir -r requirements.txt # the venv created inside backend dir beside files of app
+    ARTIFACT_PATH: ./backend/youssef/venv
+
+
+
+
 # ---
 
 # slack_pipeline_start:
