@@ -115,6 +115,6 @@ deploy_to_ec2:
   - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml --vault-password-file=<(echo $VAULT_PASSWORD)
 
   needs:
-    # - dockarize-react
+    - dockarize-react
     # - dockarize-flask
 
