@@ -75,32 +75,32 @@ services:
 
 # we comment this third server of backend because the recourses of EC2 machine can't afford it and also comment it from pool of ip in load balancer in nginx.conf
   
-  backend3: # this is for test load balancer of nginx 
-    image: youssef11gaber10/flask-service:latest
-    container_name: backend-server3
-    hostname: backend3-server
-    expose:
-      - 5000
-    env_file:
-        - .env
-    networks:
-      - front_backend
-      - backend_postgres
-    # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
-    # depends_on:
-    #   - postgres
-    #   - backend
-    #   - backend2
-    depends_on:
-      backend:
-        condition: service_healthy
-      backend2:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:5000/api/tasks').getcode()==200 else sys.exit(1)"]
-      interval: 5s # check every 5 seconds
-      timeout: 3s # wait for 3 seconds 
-      retries: 5 # try 5 times after them with no response he will consider the status unhealthy
+  # backend3: # this is for test load balancer of nginx 
+  #   image: youssef11gaber10/flask-service:latest
+  #   container_name: backend-server3
+  #   hostname: backend3-server
+  #   expose:
+  #     - 5000
+  #   env_file:
+  #       - .env
+  #   networks:
+  #     - front_backend
+  #     - backend_postgres
+  #   # restart: always # if he fails cause any thing like db not yet ready and he fails for that he will be restart
+  #   # depends_on:
+  #   #   - postgres
+  #   #   - backend
+  #   #   - backend2
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #     backend2:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:5000/api/tasks').getcode()==200 else sys.exit(1)"]
+  #     interval: 5s # check every 5 seconds
+  #     timeout: 3s # wait for 3 seconds 
+  #     retries: 5 # try 5 times after them with no response he will consider the status unhealthy
 
   
 
