@@ -56,11 +56,45 @@ install-dependencies-back:
     # COMMAND: sh -c 'python -m venv ./youssef/venv && . ./youssef/venv/bin/activate && pip install --no-cache-dir -r requirements.txt' # the venv created inside backend dir beside files of app
     ARTIFACT_PATH: ./backend/youssef/venv
   #the command cause error so i will implement it here 
-  script:
+  script: # its like i made antoher script section beside the extended one 
     - cd $PLACEHOLDER_DIRECTORY
     - python -m venv ./youssef/venv
     - . ./youssef/venv/bin/activate
     - pip install --no-cache-dir -r requirements.txt
+
+.lint-template:
+  stage: lint
+  image: $BASE_IMAGE
+  script:
+    - cd $PLACEHOLDER_DIRECTORY
+    - $COMMAND
+  # needs:
+  #   - install-dependencies-front
+  #   - install-dependencies-back
+
+lint-front:
+  extends: .lint-template
+  variables:
+    BASE_IMAGE: node:18-alpine
+    PLACEHOLDER_DIRECTORY: ./frontend
+    COMMAND: npm run lint 
+  needs:
+    - install-dependencies-front
+
+lint-back:
+  extends: .lint-template
+  variables:
+    BASE_IMAGE: python:3.11
+    PLACEHOLDER_DIRECTORY: ./backend
+    COMMAND: flake8
+
+
+# lint-back:
+#   extends: .lint-template
+#   variables:
+#     BASE_IMAGE: python:3.11
+#     PLACEHOLDER_DIRECTORY: ./backend
+#     COMMAND: flake8
 
 
 
