@@ -12,6 +12,8 @@ variables:
   BACK_SERVICE_TAG_LATEST: $DOCKERHUB_USERNAME/flask-service:latest
   PLACEHOLDER_LATEST: placeholder
   REACT_APP_API_URL_ARG: "" # NOT AFFECT THE BUILD OF FLASK
+  INSTALL_COMMAND: "" #  it will be npm install or pip install
+
 
 
 
@@ -19,11 +21,25 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - ./frontend/node_modules
-    - /youssef/venv
+    # - /youssef/venv
     
 
+.install-dependencies-template:
+  stage: install-dependencies
+  script:
+    - cd $PLACEHOLDER_DIRECTORY
+    - $INSTALL_COMMAND
+  artifacts:
+    paths:
+      - ./frontend/node_modules 
+      # - /youssef/venv # need to reconfigure want make the job collect the dependencies in venv
 
 
+install-dependencies-front:
+  extends: .install-dependencies-template
+  variables:
+    PLACEHOLDER_DIRECTORY: ./frontend
+    INSTALL_COMMAND: npm install
 
 # ---
 
@@ -50,71 +66,71 @@ cache:
 
 # ---
 
-.dockerize_template:
-  stage: build-docker-images
-  image: docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-  script:
-    - cd $PLACEHOLDER_DIRECTORY
-    - docker build ${REACT_APP_API_URL_ARG} -t  app:v1 .
-    - docker tag app:v1 $PLACEHOLDER_LATEST
-    - docker push $PLACEHOLDER_LATEST
+# .dockerize_template:
+#   stage: build-docker-images
+#   image: docker:latest
+#   services:
+#     - docker:dind
+#   before_script:
+#     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+#   script:
+#     - cd $PLACEHOLDER_DIRECTORY
+#     - docker build ${REACT_APP_API_URL_ARG} -t  app:v1 .
+#     - docker tag app:v1 $PLACEHOLDER_LATEST
+#     - docker push $PLACEHOLDER_LATEST
 
-dockarize-react:
-  extends: .dockerize_template
-  variables:
-    PLACEHOLDER_DIRECTORY: frontend
-    PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
-    # REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=http://$EC2_HOST/api   # this replace http//localhost:3000/api in front 
-    ##### REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=https://$EC2_HOST/api   # cause its will be static in code and you can do APIURL='/api' on ly in code and it work but because he put the ip static in code and this not normal so i will but here in var as https  
-
-  # needs:
-  #   - slack_pipeline_start
-
-# dockarize-flask:
+# dockarize-react:
 #   extends: .dockerize_template
 #   variables:
-#     PLACEHOLDER_DIRECTORY: backend
-#     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
-#   needs:
-#     - slack_pipeline_start
+#     PLACEHOLDER_DIRECTORY: frontend
+#     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
+#     # REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=http://$EC2_HOST/api   # this replace http//localhost:3000/api in front 
+#     ##### REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=https://$EC2_HOST/api   # cause its will be static in code and you can do APIURL='/api' on ly in code and it work but because he put the ip static in code and this not normal so i will but here in var as https  
+
+#   # needs:
+#   #   - slack_pipeline_start
+
+# # dockarize-flask:
+# #   extends: .dockerize_template
+# #   variables:
+# #     PLACEHOLDER_DIRECTORY: backend
+# #     PLACEHOLDER_LATEST: $BACK_SERVICE_TAG_LATEST
+# #   needs:
+# #     - slack_pipeline_start
 
 # ---
 
 
-deploy_to_ec2:
-  stage: deploy
-  image: python:3.12 
-  before_script:
-  # install ssh client
-    - apt-get update && apt-get install -y openssh-client
-  # install ansible
-    - pip install ansible==8.6.0
-  # setup ssh
-    # - eval $(ssh-agent -s)
-    # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # autmate provide the .pem instead of provide throw command -i .pem =>  no need for those cause  its not real ssh i give ssh-private key to ansible when run the playbook --private-key=.pem
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts # instead of asking me first time to put the ip in known_hosts i put the ip $ec2_host
-    - chmod 644 ~/.ssh/known_hosts
-  script:
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo apt-get update -y && sudo apt-get install docker.io -y" # done inside ansible 
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo systemctl start docker" # done inside ansible
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo usermod -aG docker $EC2_USER" # ansible done implicitly
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "newgrp docker" # ansible done implicitly
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD" # done with ansible
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker pull $DOCKER_IMAGE_LATEST" # done with ansible
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker stop $CI_JOB_NAME || true"
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker rm $CI_JOB_NAME || true"
-    # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker run -d --name $CI_JOB_NAME -p $PORT:$PORT $DOCKER_IMAGE_LATEST"
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/private-key-file
-  - chmod 600 ~/private-key-file
-  - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml --vault-password-file=<(echo $VAULT_PASSWORD)
+# deploy_to_ec2:
+#   stage: deploy
+#   image: python:3.12 
+#   before_script:
+#   # install ssh client
+#     - apt-get update && apt-get install -y openssh-client
+#   # install ansible
+#     - pip install ansible==8.6.0
+#   # setup ssh
+#     # - eval $(ssh-agent -s)
+#     # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - # autmate provide the .pem instead of provide throw command -i .pem =>  no need for those cause  its not real ssh i give ssh-private key to ansible when run the playbook --private-key=.pem
+#     - mkdir -p ~/.ssh
+#     - chmod 700 ~/.ssh
+#     - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts # instead of asking me first time to put the ip in known_hosts i put the ip $ec2_host
+#     - chmod 644 ~/.ssh/known_hosts
+#   script:
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo apt-get update -y && sudo apt-get install docker.io -y" # done inside ansible 
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo systemctl start docker" # done inside ansible
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "sudo usermod -aG docker $EC2_USER" # ansible done implicitly
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "newgrp docker" # ansible done implicitly
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD" # done with ansible
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker pull $DOCKER_IMAGE_LATEST" # done with ansible
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker stop $CI_JOB_NAME || true"
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker rm $CI_JOB_NAME || true"
+#     # - ssh -o StrictHostKeyChecking=accept-new $EC2_USER@$EC2_HOST "docker run -d --name $CI_JOB_NAME -p $PORT:$PORT $DOCKER_IMAGE_LATEST"
+#   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/private-key-file
+#   - chmod 600 ~/private-key-file
+#   - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml --vault-password-file=<(echo $VAULT_PASSWORD)
 
-  needs:
-    - dockarize-react
-    # - dockarize-flask
+#   needs:
+#     # - dockarize-react
+#     # - dockarize-flask
 
