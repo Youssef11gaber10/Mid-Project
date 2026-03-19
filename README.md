@@ -215,22 +215,20 @@ Your pipeline depends on these environment variables being configured in GitLab 
 
 You can also use the video below as proof of the rotation behavior:
 
-[Video: loadbalancer.mp4](result-images/loadbalancer.mp4)
+<video controls width="720" src="result-images/loadbalancer.mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Results / Screenshots / Video
 All screenshots/logs/videos you want to include should be placed in the repository folder:
 - `result-images/`
 
 Included results:
-- Architecture overview: ![Architecture](result-images/Architecture.png)
 - Pipeline screenshot(s): ![Pipeline](result-images/pipeline.png)
 - Ansible / runner logs: ![Ansible logs](result-images/ansible.png)
 - Application runtime screenshot: ![Application screenshot](result-images/application.png)
 
 If your actual screenshot filenames differ, update the filenames in this README to match your `result-images/` contents.
 
-Load balancer proof video:
-- `result-images/loadbalancer.mp4` (about 14 seconds)
-  - demonstrates `http -> https` redirect
-  - repeated requests rotate between backend containers (serve1 -> serve2 -> serve1)
+Video note: the preview above demonstrates `http -> https` redirect and request rotation between backend containers (serve1 -> serve2 -> serve1).
 
