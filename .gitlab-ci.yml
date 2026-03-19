@@ -123,7 +123,7 @@ test-back:
     - . ./youssef/venv/bin/activate
     - pytest test_app.py
   needs:
-    - lint-back
+    - install-dependencies-back
 
 
 # lint-back:
