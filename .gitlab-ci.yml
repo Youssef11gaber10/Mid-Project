@@ -13,6 +13,7 @@ variables:
   PLACEHOLDER_LATEST: placeholder
   REACT_APP_API_URL_ARG: "" # NOT AFFECT THE BUILD OF FLASK
   INSTALL_COMMAND: "" #  it will be npm install or pip install
+  BASE_IMAGE: "" # IN NODE have node image and in back have python image
 
 
 
@@ -26,6 +27,7 @@ cache:
 
 .install-dependencies-template:
   stage: install-dependencies
+  image: $BASE_IMAGE
   script:
     - cd $PLACEHOLDER_DIRECTORY
     - $INSTALL_COMMAND
@@ -38,9 +40,9 @@ cache:
 install-dependencies-front:
   extends: .install-dependencies-template
   variables:
+    BASE_IMAGE: node:18-alpine
     PLACEHOLDER_DIRECTORY: ./frontend
     INSTALL_COMMAND: npm install
-
 # ---
 
 # slack_pipeline_start:
