@@ -232,7 +232,5 @@ Included results:
 - Ansible / runner logs: ![Ansible logs](result-images/ansible.png)
 - Application runtime screenshot: ![Application screenshot](result-images/application.png)
 
-If your actual screenshot filenames differ, update the filenames in this README to match your `result-images/` contents.
 
-Video note: the preview above demonstrates `http -> https` redirect and request rotation between backend containers (serve1 -> serve2 -> serve1).
 
