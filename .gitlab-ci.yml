@@ -84,7 +84,12 @@ lint-back:
   variables:
     BASE_IMAGE: python:3.11
     PLACEHOLDER_DIRECTORY: ./backend
-    COMMAND: flake8
+    # need to activate venv before run flake8
+    # COMMAND: flake8
+  script:
+    - cd $PLACEHOLDER_DIRECTORY
+    - . ./youssef/venv/bin/activate
+    - flake8
   needs:
     - install-dependencies-back
 
