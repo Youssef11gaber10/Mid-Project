@@ -20,7 +20,7 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - ./frontend/node_modules
-    - /youssef/venv
+    - ./backend/youssef/venv
     
 # i decide to don't make template cause they are different in install in each one the python will do command for create venv and install requirements not strait forward
 install-dependencies-front:
