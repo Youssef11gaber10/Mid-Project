@@ -53,7 +53,7 @@ install-dependencies-back:
   variables:
     BASE_IMAGE: python:3.11
     PLACEHOLDER_DIRECTORY: ./backend
-    COMMAND: python -m venv ./youssef/venv && . ./youssef/venv/bin/activate && pip install --no-cache-dir -r requirements.txt # the venv created inside backend dir beside files of app
+    COMMAND: sh -c "python -m venv ./youssef/venv && . ./youssef/venv/bin/activate && pip install --no-cache-dir -r requirements.txt" # the venv created inside backend dir beside files of app
     ARTIFACT_PATH: ./backend/youssef/venv
 
 
