@@ -25,7 +25,10 @@ swaggerui_blueprint = get_swaggerui_blueprint(
         'app_name': "Task Manager API"
     }
 )
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+app.register_blueprint(
+    swaggerui_blueprint,
+    url_prefix=SWAGGER_URL
+)
 
 # Database configuration
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/microservices_db')
@@ -35,9 +38,13 @@ db_password = os.getenv("POSTGRES_PASSWORD")
 db_host = os.getenv("POSTGRES_HOST")
 db_name = os.getenv("POSTGRES_DB")
 db_port = os.getenv("POSTGRES_PORT")
+
 print(db_host, db_port, db_user, db_password, db_name)
 
-DATABASE_URI = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+DATABASE_URI = (
+    f"postgresql://{db_user}:{db_password}"
+    f"@{db_host}:{db_port}/{db_name}"
+)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,11 +56,24 @@ migrate = Migrate(app, db)
 # Sample model
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(
+        db.String(100),
+        nullable=False
+    )
     description = db.Column(db.Text)
-    completed = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    completed = db.Column(
+        db.Boolean,
+        default=False
+    )
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        onupdate=db.func.now()
+    )
 
     def to_dict(self):
         return {
@@ -62,13 +82,16 @@ class Task(db.Model):
             'description': self.description,
             'completed': self.completed,
             'created_at': (
-                self.created_at.isoformat() if self.created_at else None
+                self.created_at.isoformat()
+                if self.created_at else None
             ),
             'updated_at': (
-                self.updated_at.isoformat() if self.updated_at else None
+                self.updated_at.isoformat()
+                if self.updated_at else None
             )
         }
-    
+
+
 @app.route('/api/loadbalancer')
 def loadbalancer():
     try:
@@ -85,36 +108,52 @@ def loadbalancer():
             'container': socket.gethostname()
         }), 500
 
+
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Not found'}), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
     return jsonify({'error': 'Internal server error'}), 500
 
+
 # Routes
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     try:
-        tasks = Task.query.order_by(Task.created_at.desc()).all()
-        return jsonify([task.to_dict() for task in tasks])
+        tasks = Task.query.order_by(
+            Task.created_at.desc()
+        ).all()
+        return jsonify([
+            task.to_dict() for task in tasks
+        ])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
     try:
         data = request.get_json()
         if not data or 'title' not in data:
-            return jsonify({'error': 'Title is required'}), 400
+            return jsonify(
+                {'error': 'Title is required'}
+            ), 400
 
         new_task = Task(
             title=data['title'],
-            description=data.get('description', ''),
-            completed=data.get('completed', False)
+            description=data.get(
+                'description',
+                ''
+            ),
+            completed=data.get(
+                'completed',
+                False
+            )
         )
         db.session.add(new_task)
         db.session.commit()
@@ -123,6 +162,7 @@ def create_task():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
     try:
@@ -130,17 +170,29 @@ def update_task(task_id):
         data = request.get_json()
 
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify(
+                {'error': 'No data provided'}
+            ), 400
 
-        task.title = data.get('title', task.title)
-        task.description = data.get('description', task.description)
-        task.completed = data.get('completed', task.completed)
+        task.title = data.get(
+            'title',
+            task.title
+        )
+        task.description = data.get(
+            'description',
+            task.description
+        )
+        task.completed = data.get(
+            'completed',
+            task.completed
+        )
 
         db.session.commit()
         return jsonify(task.to_dict())
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
@@ -152,6 +204,7 @@ def delete_task(task_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/health')
 def health_check():
@@ -168,10 +221,12 @@ def health_check():
             'error': str(e)
         }), 500
 
+
 # if __name__ == '__main__':
 #     with app.app_context():
 #         db.create_all()
 #     app.run(host='0.0.0.0', port=5000, debug=True)
+
 
 if __name__ == '__main__':
     with app.app_context():
@@ -179,4 +234,8 @@ if __name__ == '__main__':
         if not inspector.has_table("task"):
             db.create_all()
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True
+    )
