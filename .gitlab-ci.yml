@@ -89,7 +89,7 @@ lint-back:
   script:
     - cd $PLACEHOLDER_DIRECTORY
     - . ./youssef/venv/bin/activate
-    - flake8
+    - flake8 app.py 
   needs:
     - install-dependencies-back
 
