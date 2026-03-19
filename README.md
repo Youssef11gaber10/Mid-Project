@@ -215,9 +215,9 @@ Your pipeline depends on these environment variables being configured in GitLab 
 
 You can also use the video below as proof of the rotation behavior:
 
-<video controls width="720" src="result-images/loadbalancer.mp4">
-  Your browser does not support the video tag.
-</video>
+![Load balancer preview](result-images/loadbalancer.gif)
+
+Full video (MP4): [result-images/loadbalancer.mp4](result-images/loadbalancer.mp4)
 
 ## Results / Screenshots / Video
 All screenshots/logs/videos you want to include should be placed in the repository folder:
@@ -230,5 +230,5 @@ Included results:
 
 If your actual screenshot filenames differ, update the filenames in this README to match your `result-images/` contents.
 
-Video note: the preview above demonstrates `http -> https` redirect and request rotation between backend containers (serve1 -> serve2 -> serve1).
+Video note: the GIF preview above demonstrates `http -> https` redirect and request rotation between backend containers (serve1 -> serve2 -> serve1).
 
