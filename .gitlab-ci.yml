@@ -69,7 +69,7 @@ dockarize-react:
     PLACEHOLDER_DIRECTORY: frontend
     PLACEHOLDER_LATEST: $FRONT_SERVICE_TAG_LATEST
     # REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=http://$EC2_HOST/api   # this replace http//localhost:3000/api in front 
-    REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=https://$EC2_HOST/api   # cause its will be static in code and you can do APIURL='/api' on ly in code and it work but because he put the ip static in code and this not normal so i will but here in var as https  
+    ##### REACT_APP_API_URL_ARG: --build-arg REACT_APP_API_URL=https://$EC2_HOST/api   # cause its will be static in code and you can do APIURL='/api' on ly in code and it work but because he put the ip static in code and this not normal so i will but here in var as https  
 
   # needs:
   #   - slack_pipeline_start
@@ -115,6 +115,6 @@ deploy_to_ec2:
   - ansible-playbook -i $EC2_HOST, -u $EC2_USER --private-key=~/private-key-file playbook.yml --vault-password-file=<(echo $VAULT_PASSWORD)
 
   needs:
-    - dockarize-react
+    # - dockarize-react
     # - dockarize-flask
 

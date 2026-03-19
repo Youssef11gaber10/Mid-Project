@@ -24,11 +24,11 @@ import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import axios from 'axios';
 
 // const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api'; // this run for developent but in prod need sub local host ////to $ec2_host to replacable IP process.env.REACT_APP_API_URL if he gots this env will run on the $EC2_HOST so put it while build image in //gitlab-ci
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api'; // this run for developent but in prod need sub local host ////to $ec2_host to replacable IP process.env.REACT_APP_API_URL if he gots this env will run on the $EC2_HOST so put it while build image in //gitlab-ci
 // const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:80/api';
 
 
-
+const API_URL= ('/api')
 function App() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ title: '', description: '' });
