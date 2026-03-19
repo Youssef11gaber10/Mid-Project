@@ -68,9 +68,7 @@ install-dependencies-back:
   script:
     - cd $PLACEHOLDER_DIRECTORY
     - $COMMAND
-  # needs:
-  #   - install-dependencies-front
-  #   - install-dependencies-back
+
 
 lint-front:
   extends: .lint-template
@@ -87,6 +85,8 @@ lint-back:
     BASE_IMAGE: python:3.11
     PLACEHOLDER_DIRECTORY: ./backend
     COMMAND: flake8
+  needs:
+    - install-dependencies-back
 
 
 # lint-back:
